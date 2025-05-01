@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads')); 
 
 app.use('/', userRoutes);
-const port = 6200;
+const port = process.env|| 6200;
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
