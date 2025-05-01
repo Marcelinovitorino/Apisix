@@ -28,19 +28,22 @@ routes.post("/users", upload.array('images', 5), async (req, res) => {
 
 
 // Atualizar usuário
-routes.put("/users/:id", upload.single("image"), async (req, res) => {
+routes.put("/users/:id", upload.array('images', 5), async (req, res) => {
   const id = req.params.id;
   const { name, email } = req.body;
-  const image = req.file?.filename;
+  const images = req.files?.map(file => file.filename);
 
-  await database.update(id, {
-    name,
-    email,
-    image,
-  });
+  // Atualizar os dados do usuário (name, email)
+  await database.update(id, { name, email });
+
+  // Atualizar as images
+  if (images && images.length > 0) {
+    await database.update(id, images);
+  }
 
   res.status(204).json([]);
 });
+
 
 // Deletar usuário
 routes.delete("/users/:id", async (req, res) => {

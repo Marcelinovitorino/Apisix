@@ -51,14 +51,24 @@ export class DatabasePostgress {
   
 
   // Atualizar usuário por ID
-  async update(id, user) {
-    const { name, email, image } = user;
+  async update(userId, newImages) {
+    // Excluir as imagens antigas do banco de dados
     await sql`
-      UPDATE users 
-      SET name = ${name}, email = ${email}, image = ${image} 
-      WHERE id = ${id}
+      DELETE FROM user_images WHERE user_id = ${userId}
     `;
+  
+    // Inserir as novas imagens
+    if (Array.isArray(newImages)) {
+      for (const filename of newImages) {
+        await sql`
+          INSERT INTO user_images (user_id, filename)
+          VALUES (${userId}, ${filename})
+        `;
+      }
+    }
   }
+  
+  
 
   // Deletar usuário por ID
   async delete(id) {
